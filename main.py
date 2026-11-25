@@ -42,6 +42,15 @@ def main() -> int:
     # world-readable. Never chmod the /output directory itself.
     os.chmod(OUTPUT_PATH, 0o644)
 
+    # Read the file back and make sure what landed on disk is exactly
+    # the line we validated, so a silent write failure cannot pass.
+    with open(OUTPUT_PATH, encoding="utf-8") as handle:
+        written = handle.read()
+    if written != line + "\n":
+        print("error: written entry does not match the validated line",
+              file=sys.stderr)
+        return 1
+
     print(f"wrote {len(line)} characters to {OUTPUT_PATH}")
     return 0
 
